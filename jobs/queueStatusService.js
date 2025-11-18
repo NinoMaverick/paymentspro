@@ -1,4 +1,4 @@
-import { paymentQueue } from "../queues/paymentQueue";
+import { paymentQueue } from "../queues/paymentQueue.js";
 
 export const getQueueStatus = {
     waiting: async () => {

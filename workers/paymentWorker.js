@@ -1,16 +1,40 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "../redis.js";
+import { prisma } from "../lib/prisma.js";
+import { webhookQueue } from "../queues/webhookQueue.js";
+import { simulatePayment } from "../jobs/paymentProcessor.js";
 
 const worker = new Worker(
     "paymentQueue",
     async (job) => {
-     if (!job.data.userId || !job.data.amount) {
-         console.log(`Job ${job.id} invalid: missing userId or amount`);
+    const { userId, amount, paymentId } = job.data;
+     
+    if (!userId || !amount || !paymentId ) {
+         console.log(`Job ${job.id} invalid: missing userId, amount or paymentId`);
         return;   
         };
-        console.log("Processing payment job:", job.id, job.data);
-        await new Promise((r) => setTimeout(r, 7000));
-        console.log(`Payment processed for user ${job.data.userId}`); 
+
+    console.log("Processing payment job:", job.id, job.data);
+    
+    await new Promise((r) => setTimeout(r, 7000));
+    
+    const status = simulatePayment({ userId, amount, paymentId });
+
+    await prisma.payment.update({
+        where: { id: paymentId },
+        data: { status },
+    });
+
+    console.log(`Payment ${status} for user ${userId}, paymentId: ${paymentId}`);
+    
+    await webhookQueue.add("paymentWebhook", {
+        event: success ? "payment.success" : "payment.failed",
+        paymentId,
+        userId,
+        amount,
+    });
+
+    return { status };
     },
     { connection: redisConnection }
 );

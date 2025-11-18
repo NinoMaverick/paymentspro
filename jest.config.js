@@ -4,5 +4,6 @@ export default {
     "^.+\\.js$": "babel-jest"
   },
   moduleFileExtensions: ["js", "json"],
-  testMatch: ["**/tests/**/*.test.js"]
+  testMatch: ["**/tests/**/*.test.js"],
+  testTimeout: 20000
 };

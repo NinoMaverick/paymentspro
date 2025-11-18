@@ -1,5 +1,5 @@
 import express from "express";
-import { enqueuePaymentJob } from "../jobs/enqueuePaymentJob";
+import { enqueuePaymentJob } from "../jobs/enqueuePaymentJob.js";
 import { getQueueStatus } from "../jobs/queueStatusService.js";
 
 const router = express.Router();
@@ -12,7 +12,6 @@ router.post("/queue-payment", async (req, res) => {
     } catch (error) {
       res.status(400).json({ error: error.message });   
     }
- 
 });
 
 router.get("/queue-waiting", async (req, res) => {

@@ -1,15 +1,28 @@
-PaymentsPro – Node.js Async Payment API 🚀
+PaymentsPro — Internal Fintech Engine
 
-A production-ready payment system built to showcase async architecture, financial logic, and test-driven development:
+PaymentsPro is a backend-focused fintech simulation platform designed to mimic real-world payment flows. It provides an internal payment processing system with asynchronous job queues, wallet management, and a complete ledger system — all without integrating any external payment gateway.
 
-Queues & Workers: Redis + BullMQ powers reliable background job processing for payments & notifications
+Key Features
 
-Retries & Idempotency: Automatic retry logic with exponential backoff; endpoints prevent duplicate transactions
+Async Payment Processing: Payment jobs are queued and processed asynchronously, simulating real-world gateway delays and success/failure scenarios.
 
-Wallet & Ledger System: Simple double-entry bookkeeping tracks balances & money movement
+Internal Webhook System: Mimics how gateways like Paystack and Flutterwave confirm payments asynchronously via webhooks.
 
-Webhook Integration: Real-time payment verification for seamless client updates
+Wallet Management: Each user has a wallet that is updated only through verified payment events.
 
-Test-Driven Development: Unit + integration tests ensure robustness and reliability
+Ledger Tracking: Every credit, debit, and failed transaction is recorded for complete auditability.
 
-Built as a flagship API to demonstrate building resilient, client-ready backend systems with strong architecture and financial logic.
+Payment Verification Endpoint: Clients can verify any payment’s status (PENDING, SUCCESS, FAILED) using its unique paymentId.
+
+Resilient and Modular: Built with Node.js, Express, Prisma, and BullMQ, making it easy to extend, test, or eventually integrate with real payment gateways.
+
+
+Use Case
+
+PaymentsPro is ideal for:
+
+Developers learning payment system architecture.
+
+Fintech prototyping without relying on external gateways.
+
+Testing async job processing, wallet, and ledger logic.

@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Float
+  status    String   @default("PENDING") // PENDING | SUCCESS | FAILED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Float    @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model Ledger {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // CREDIT | DEBIT
+  amount    Float
+  reference String   // paymentId or transferId
+  status    String   // SUCCESS | FAILED
+  createdAt DateTime @default(now())
+}

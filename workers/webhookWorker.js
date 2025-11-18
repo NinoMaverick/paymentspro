@@ -1,16 +1,27 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "../redis.js";
+import { handlePaymentSuccess, handlePaymentFailed} from "../handlers/webhookHandler.js";
 
 const worker = new Worker(
   "webhookQueue",
   async (job) => {
-    if (!job.data.event || !job.data.payload) {
-      console.log(`Webhook job ${job.id} invalid: missing event or payload`);
-      return;
+    const { event, payload } = job.data;
+    const { paymentId, userId, amount } = payload;
+
+    console.log(`Webhook: ${event} for payment ${paymentId}`);
+
+    switch (event) {
+      case "payment.success":
+        await handlePaymentSuccess({ paymentId, userId, amount });
+        break;
+    
+      case "payment.failed":
+        await handlePaymentFailed({ paymentId, userId, amount });
+        break;
+
+      default:
+         console.log(`Webhook triggered for event ${job.data.event}`);
     }
-    console.log("Processing webhook job:", job.id, job.data);
-    await new Promise((r) => setTimeout(r, 2000));
-    console.log(`Webhook triggered for event ${job.data.event}`);
   },
   { connection: redisConnection }
 );
@@ -21,3 +32,5 @@ worker.on("completed", (job) => {
 worker.on("failed", (job, err) => {
   console.error(`Webhook job ${job.id} failed:`, err);
 });
+
+export default worker;
