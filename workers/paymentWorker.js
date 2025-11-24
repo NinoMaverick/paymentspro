@@ -1,6 +1,6 @@
 import { Worker } from "bullmq";
 import { redisConnection } from "../redis.js";
-import { prisma } from "../lib/prisma.js";
+import prisma from "../lib/prisma.js";
 import { webhookQueue } from "../queues/webhookQueue.js";
 import { simulatePayment } from "../jobs/paymentProcessor.js";
 
@@ -16,9 +16,7 @@ const worker = new Worker(
 
     console.log("Processing payment job:", job.id, job.data);
     
-    await new Promise((r) => setTimeout(r, 7000));
-    
-    const status = simulatePayment({ userId, amount, paymentId });
+    const status = await simulatePayment({ userId, amount, paymentId });
 
     await prisma.payment.update({
         where: { id: paymentId },
@@ -28,7 +26,7 @@ const worker = new Worker(
     console.log(`Payment ${status} for user ${userId}, paymentId: ${paymentId}`);
     
     await webhookQueue.add("paymentWebhook", {
-        event: success ? "payment.success" : "payment.failed",
+        event: status === "SUCCESS" ? "payment.success" : "payment.failed",
         paymentId,
         userId,
         amount,

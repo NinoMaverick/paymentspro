@@ -1,6 +1,6 @@
 import { paymentQueue } from "../queues/paymentQueue.js";
 
-export const enqueuePaymentJob = async({ userId, amount }) => {
+export const enqueuePaymentJob = async({ userId, amount, paymentId }) => {
     if (!userId || !amount || !paymentId) 
         throw new Error ("missing userId, amount, or paymentId");
 

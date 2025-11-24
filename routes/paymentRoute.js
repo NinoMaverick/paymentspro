@@ -1,6 +1,6 @@
 import express from "express";
-import { prisma } from "../lib/prisma.js";
-import { enqueuePaymentJob } from "../jobs/enqueuePaymentJob";
+import prisma from "../lib/prisma.js";
+import { enqueuePaymentJob } from "../jobs/enqueuePaymentJob.js";
 
 const router = express.Router();
 
@@ -8,7 +8,8 @@ router.post("/create-payment", async (req, res) => {
     const { userId, amount } = req.body;
 
     if (!userId || !amount ) {
-        return res.status(400).json({ error: "userId and amount are required"})
+        return res.status(400)
+              .json({ error: "userId and amount are required"})
     };
 
     try {
@@ -62,3 +63,5 @@ router.get("/verify-payment/:paymentId", async (req, res) => {
     res.status(500).json({ error: "Failed to verify payment" });
   }
 });
+
+export default router;
